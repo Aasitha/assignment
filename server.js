@@ -92,9 +92,10 @@ server.on("connection",socket=>{
             
             if(data.msg==""){
                 if(!sockets[data.clientid].isInChat){
+                    
                     sockets[data.clientid].requests.push(socket.username);
                     socket.write(`Request is sent to ${data.clientid}`)
-                    sockets[data.clientid].write(`You have a request from ${socket.username}\nTEnter acept<username> to open session`)
+                    sockets[data.clientid].write(`You have a request from ${socket.username}\nEnter acept<username> to open session`)
 
                 }else{
                     socket.write(`${data.clientid} is not available for chat`);
