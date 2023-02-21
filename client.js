@@ -127,6 +127,19 @@ socket.on("connect",()=>{
                                 socket.write(JSON.stringify(data));
                             })
 
+                        }else if(data.command==5){
+                            data.msg="";
+                        readLine.question("Enter name of the group you want to join",answer=>{
+                        data.clientid=answer;
+                        socket.write(JSON.stringify(data));
+                })
+                        }
+                        else if(data.command==6){
+                            data.msg="";
+                            readLine.question("Enter name of your group",answer=>{
+                            data.clientid=answer;
+                            socket.write(JSON.stringify(data));
+                })
                         }
                     })
                     
