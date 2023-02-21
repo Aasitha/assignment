@@ -82,11 +82,7 @@ server.on("connection",socket=>{
             })
             socket.write("The active clients are "+cli);
             //console.log(typeof(name))
-            delete sockets[socket.username]
-
-
-            socket.destroy();
-            console.log(Object.keys(sockets))
+            
             console.log(`the number of active clients are ${Object.keys(sockets).length}`)
         }else if(data.command==4){
             if(Object.keys(sockets).indexOf(data.clientid)==-1){

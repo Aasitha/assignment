@@ -237,6 +237,8 @@ socket.on("connect",()=>{
 
 
 
+                }else if(message=="show active clients"){
+                    data.command=3;
                 }
                 socket.write(JSON.stringify(data))
             })
