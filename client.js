@@ -21,32 +21,30 @@ var items2=[
 ]
 var items=[
     "1. Register",
-    "2. Login",
-    "3. View Active Clients",
-    "4. Join 1:1 session",
-    "5. Join group chat",
-    "6. Create a group",
-    "7. View Requests"
+    "2. Login"
+    
 ]
 //const userArr=[];
 //var ditems2=["1","2","3","4","5","6"];
+
 const readLine = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-
+console.log("press 0 for input line shortcuts");
 
 const socket=net.connect({
     port: 1235
 })
+
 
 socket.on("connect",()=>{
 
    
         
         term.singleColumnMenu(items , function( error , response ){
-            term( '\n' ).eraseLineAfter.green() ;
+            //term( '\n' ).eraseLineAfter.green() ;
             //socket.write(JSON.stringify(data));
             data.command=response.selectedIndex+1;
             if(data.command==1){
@@ -63,7 +61,7 @@ socket.on("connect",()=>{
                     console.log("error "+err);
                     res.send(err.toString());
                 }else{
-                    console.log("successfully connected");
+                    //console.log("successfully connected");
         //res.send("successfully connected");
                 }
                 var userSchema = new mongoose.Schema({
@@ -76,9 +74,22 @@ socket.on("connect",()=>{
                     username:username,
                     password:password
                 })
-                datt.save(function(err,doc){
-                    
+                userModel.find({username:datt.username},function(err,docs){
+                    if(err) throw err
+                    else{
+                        if(Object.keys(docs).length>0){
+                            console.log(`Error:This username already exixts`)
+                            socket.destroy();;
+                        }else {
+                            datt.save(function(err,doc){
+                                if(err) throw err;
+                                else console.log("Reistration completed")
+                            })
+                        }
+                    }
                 })
+                socket.destroy();
+                
 });
 
             }else if(data.command==2){
@@ -121,7 +132,7 @@ socket.on("connect",()=>{
                             socket.write(JSON.stringify(data));
                         }
                         else if(data.command==4){
-                            readLine.question("Enter the destination client",(ans)=>{
+                            readLine.question("Enter the destination client: ",(ans)=>{
                                 data.clientid=ans;
                                 data.msg="";
                                 socket.write(JSON.stringify(data));
@@ -186,6 +197,38 @@ socket.on("connect",()=>{
                     data.command=4;
                     socket.write(JSON.stringify(data).substring(81));
                     
+                }
+                if(message=="0"){
+                    /*
+                    term.cyan("show active clients");
+                    console.log("start 1:1 session\n");
+                    console.log("start group session\n");
+                    console.log("view active groups\n");
+                    console.log("create group\n");
+                    console.log("requests");*/
+                    term.table( [
+                        [ 'input value' , 'Description'] ,
+                        ['show active clients', 'Displays active clients' ] ,
+                        ['start 1:1 session' , 'allows you to start a 1:1 session' ] ,
+                        ['start group session' , 'allows you to start a group session' ] ,
+                        ['view active groups' , 'Displays active groups' ],
+                        ['create group' , 'creates a group with you as admin' ] ,
+                        ['show requests' , 'Displays requests you got' ] ,
+                    ] , {
+                        hasBorder: true ,
+                        contentHasMarkup: true ,
+                        borderChars: 'lightRounded' ,
+                        borderAttr: { color: 'blue' } ,
+                        textAttr: { bgColor: 'default' } ,
+                        firstCellTextAttr: { bgColor: 'blue' } ,
+                        firstRowTextAttr: { bgColor: 'yellow' } ,
+                        width: 60 ,
+                        fit: true   // Activate all expand/shrink + wordWrap
+                    }
+                ) ;
+
+
+
                 }
                 socket.write(JSON.stringify(data))
             })

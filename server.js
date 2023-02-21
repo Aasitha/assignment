@@ -88,6 +88,10 @@ server.on("connection",socket=>{
             console.log(Object.keys(sockets))
             console.log(`the number of active clients are ${Object.keys(sockets).length}`)
         }else if(data.command==4){
+            if(Object.keys(sockets).indexOf(data.clientid)==-1){
+                socket.write(`There is no such client as ${data.clientid}`);
+                socket.destroy();
+            }else{
             if(data.msg==""){
                 if(sockets[data.clientid].isInChat==false){
 
@@ -129,6 +133,7 @@ server.on("connection",socket=>{
                 }
                 else sockets[socket.patner].write(data.uname+": "+data.msg);
             }
+        }
         }else if(data.command==5){
             socket.username=data.uname;
             sockets[socket.username]=socket;
