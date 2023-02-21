@@ -140,6 +140,8 @@ socket.on("connect",()=>{
                             data.clientid=answer;
                             socket.write(JSON.stringify(data));
                 })
+                        }else if(data.command==7){
+                            socket.write(JSON.stringify(data));
                         }
                     })
                     
@@ -151,44 +153,20 @@ socket.on("connect",()=>{
                 
                 
             }
-            else if(data.command==4){
-                readLine.question("Enter the destination client",(ans)=>{
-                    data.clientid=ans;
-                    data.msg="";
-                    socket.write(JSON.stringify(data));
-                })
-            }else if(data.command==5){
-                /*data.clientid=""
-                data.msg=""
-                socket.write(JSON.stringify(data))*/
-                data.msg="";
-                readLine.question("Enter name of the group you want to join",answer=>{
-                    data.clientid=answer;
-                    socket.write(JSON.stringify(data));
-                })
-            }
-            else if(data.command==6){
-                data.msg="";
-                readLine.question("Enter name of your group",answer=>{
-                    data.clientid=answer;
-                    socket.write(JSON.stringify(data));
-                })
-            }else if(data.command==7){
-                socket.write(JSON.stringify(data));
-            }
+            
             socket.on("data",(data)=>{
                 //console.log('\x1b[33m%s\x1b[0m', data);
                 
                     
-                    if(data.toString().substring(0,8)=="Requests"){
+                    /*if(data.toString().substring(0,8)=="Requests"){
                         var dat=data.toString();
 
                         dat=dat.substring(8);
                         dat=dat.split(",");
                         
-                    }else{
+                    }else{*/
                         console.log('\x1b[33m%s\x1b[0m',data.toString());
-                    }
+                    
                     
                     
                     
@@ -202,18 +180,12 @@ socket.on("connect",()=>{
                 data.msg=message;
                 if(message=="requests"){
                     data.command=5;
-                }else if(message=="3"){
-                    data.command=3;
-                    data.clientid=""    
-                }else if(message=="4"){
-                    readLine.question("Enter the destination client",(ans)=>{
-                        data.command=4;
-                        data.clientid=ans;
-                        data.msg="";
-                        
-                    })
-                }else if(message==5){
-
+                }else if(message.substring(0,6)=="accept"){
+                    data.msg="accept";
+                    data.clientid=message.substring(6);
+                    data.command=4;
+                    socket.write(JSON.stringify(data).substring(81));
+                    
                 }
                 socket.write(JSON.stringify(data))
             })

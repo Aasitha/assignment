@@ -62,16 +62,18 @@ server.on("connection",socket=>{
                 socket.isInChat=false;
                 socket.isInGroup=false;
                 socket.requests=[];
-                socket.partner="";
+                socket.patner="";
                 sockets[socket.username]=socket;
                 socket.write(`successfully logged in as ${socket.username}\n`);
+                console.log("client connected with socket id: ",socket.id+" and with ip as: "+socket.remoteAddress+":"+socket.remotePort);
+                console.log(`Number of active clients are: ${Object.keys(sockets).length}`);
                 
             }
             else if(data.command==3){
             
             
             
-            console.log("client connected with socket id: ",socket.id+" and with ip as: "+socket.remoteAddress+":"+socket.remotePort);
+            
             var cli="";
             Object.keys(sockets).forEach(i=>{
                 cli+=i.toString();
@@ -86,26 +88,35 @@ server.on("connection",socket=>{
             console.log(Object.keys(sockets))
             console.log(`the number of active clients are ${Object.keys(sockets).length}`)
         }else if(data.command==4){
-            socket.username=data.uname;
-            
-            sockets[socket.username]=socket;
-            
             if(data.msg==""){
-                if(!sockets[data.clientid].isInChat){
-                    
+                if(sockets[data.clientid].isInChat==false){
+
                     sockets[data.clientid].requests.push(socket.username);
                     socket.write(`Request is sent to ${data.clientid}`)
                     sockets[data.clientid].write(`You have a request from ${socket.username}\nEnter acept<username> to open session`)
 
                 }else{
                     socket.write(`${data.clientid} is not available for chat`);
+                    socket.destroy();
                 }
             }else{
-                if(data.msg=="quit"){
+                
+                if(data.msg=="accept"){
+                    socket.write(`You have accepted the request from ${data.clientid}`);
+                    socket.patner=data.clientid;
+                    sockets[data.clientid].patner=socket.username;
+                    socket.isInChat=true;
+                    sockets[data.clientid].isInChat=true;
+                    sockets[socket.patner].write("Your requestis being accepted");
+                }
+                else if(sockets[socket.username].patner!=data.clientid){
+                    socket.write("Your request is not accepted yet");
+                }
+                else if(data.msg=="quit"){
                    
-                    sockets[socket.username].write(`You have terminated the session with ${data.clientid}\n`);
+                    sockets[socket.username].write(`You have terminated the session with ${socket.patner}\n`);
                     if(sockets[data.clientid]){
-                        sockets[data.clientid].write(`Your session with ${socket.username} has been terminated`)
+                        sockets[socket.patner].write(`Your session with ${socket.username} has been terminated`)
                     }
                     
                     delete sockets[socket.username]
@@ -116,7 +127,7 @@ server.on("connection",socket=>{
                         delete sockets[data.clientid]
                     }
                 }
-                else sockets[data.clientid].write(data.uname+": "+data.msg);
+                else sockets[socket.patner].write(data.uname+": "+data.msg);
             }
         }else if(data.command==5){
             socket.username=data.uname;
@@ -132,6 +143,7 @@ server.on("connection",socket=>{
                 })
 
             }else{
+                if(sockets[socket.username].part)
                 var message="";
                 if(data.msg=="quit"){
                     message+=`${data.uname} has left the chat`;
@@ -184,10 +196,6 @@ server.on("connection",socket=>{
                 
             }
         }else if(data.command==6){
-        
-            socket.username=data.uname;
-            sockets[socket.username]=socket;
-
             if(data.msg==""){
             var grpinfo={
                 name:data.clientid,
@@ -259,10 +267,19 @@ server.on("connection",socket=>{
             sockets[socket.username].requests.forEach(person=>{
                 req+=person+",";
             })
+            socket.write(`Requests${req}`);
             }else{
                 socket.write("you have no requests");
             }
-            socket.write(`Requests${req}`);
+            
+        }else if(data.command==8){
+            socket.patner=data.clientid;
+            sockets[data.clientid].patner=socket.username;
+            socket.isInChat=true;
+            sockets[data.clientid].isInChat=true;
+            socket.write(`You have accepted the request from ${data.clientid}`);
+            sockets[data.clientid].write(`Your request to ${socket.username} is accepted.\n`)
+
         }
     })
     socket.on("error",()=>{
