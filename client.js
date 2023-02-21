@@ -88,7 +88,7 @@ socket.on("connect",()=>{
                         }
                     }
                 })
-                socket.destroy();
+                //socket.destroy();
                 
 });
 
@@ -125,17 +125,22 @@ socket.on("connect",()=>{
                     }else{
                     socket.write(JSON.stringify(data));
                     term.singleColumnMenu(items2,function(err,res){
+                        term.white("\n");
+                        
                         data.command=res.selectedIndex+3;
                         if(data.command==3){
                             data.msg=""
                             data.clientid=""
                             socket.write(JSON.stringify(data));
+                            
                         }
+                        
+
                         else if(data.command==4){
                             readLine.question("Enter the destination client: ",(ans)=>{
                                 data.clientid=ans;
                                 data.msg="";
-                                socket.write(JSON.stringify(data));
+                                
                             })
 
                         }else if(data.command==5){
@@ -190,15 +195,18 @@ socket.on("connect",()=>{
                 //console.log(data.uname+": ");
                 data.msg=message;
                 if(message=="requests"){
-                    data.command=5;
+                    data.command=7;
+                    //socket.write(JSON.stringify(data));
                 }else if(message.substring(0,6)=="accept"){
                     data.msg="accept";
                     data.clientid=message.substring(6);
                     data.command=4;
-                    socket.write(JSON.stringify(data).substring(81));
+                    //socket.write(JSON.stringify(data).substring(81));
                     
                 }
                 if(message=="0"){
+                    data.command="";
+                    socket.write(JSON.stringify(data));
                     /*
                     term.cyan("show active clients");
                     console.log("start 1:1 session\n");

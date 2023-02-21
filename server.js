@@ -15,7 +15,8 @@ var activeClients=[]
 let sockets={};
 var groups={}
 let clientid=0;
-const crypto = require("crypto")
+const crypto = require("crypto");
+const { exit } = require('process');
 
 // The `generateKeyPairSync` method accepts two arguments:
 // 1. The type ok keys we want, which in this case is "rsa"
@@ -122,14 +123,23 @@ server.on("connection",socket=>{
                     if(sockets[data.clientid]){
                         sockets[socket.patner].write(`Your session with ${socket.username} has been terminated`)
                     }
-                    
-                    delete sockets[socket.username]
-                    socket.destroy()
+                    socket.isInChat=false;
+                    sockets[socket.patner].isInChat=false;
+                    sockets[socket.patner].patner=""
+                    socket.patner="";
+                    data.command="";
 
-                    if(sockets[data.clientid]) {
+                    exit;
+
+
+                    
+                    //delete sockets[socket.username]
+                    //socket.destroy()
+
+                    /*if(sockets[data.clientid]) {
                         sockets[data.clientid].destroy();
                         delete sockets[data.clientid]
-                    }
+                    }*/
                 }
                 else sockets[socket.patner].write(data.uname+": "+data.msg);
             }
@@ -272,7 +282,7 @@ server.on("connection",socket=>{
             sockets[socket.username].requests.forEach(person=>{
                 req+=person+",";
             })
-            socket.write(`Requests${req}`);
+            socket.write(`Requests are from: ${req}`);
             }else{
                 socket.write("you have no requests");
             }
