@@ -82,6 +82,7 @@ socket.on("connect",()=>{
 });
 
             }else if(data.command==2){
+                
                 var username=prompt("Enter username: ");
                 var password=prompt("Enter password: ");
                 data.uname=username;
@@ -106,28 +107,29 @@ socket.on("connect",()=>{
                 var userModel=mongoose.model('users',userSchema);
                 userModel.find({username:username ,password:password},function(err,docs){
                     if(err) throw err;
-                    data.command2=3;
-                    
                     console.clear();
                     if(Object.keys(docs).length==0){
                         console.log("Invalid login.Please try again\n");
                         socket.destroy();
                     }else{
                     socket.write(JSON.stringify(data));
-                    term2.singleColumnMenu(items2,function(err,res){
-                        term2( '\n' ).eraseLineAfter.green() ;
-                        data.command2=res.selectedIndex+3;
-                        if(data.command2==3){
-                            socket.write(JSON.stringify(data));
-
-                        }else if(data.command2==4){
-                            
-                            readLine.question("Enter the username of client you want to chat",answer=>{
-                                data.clientid=answer;
-                            })
+                    term.singleColumnMenu(items2,function(err,res){
+                        data.command=res.selectedIndex+3;
+                        if(data.command==3){
+                            data.msg=""
+                            data.clientid=""
                             socket.write(JSON.stringify(data));
                         }
+                        else if(data.command==4){
+                            readLine.question("Enter the destination client",(ans)=>{
+                                data.clientid=ans;
+                                data.msg="";
+                                socket.write(JSON.stringify(data));
+                            })
+
+                        }
                     })
+                    
                 }
                     
 
@@ -136,23 +138,7 @@ socket.on("connect",()=>{
                 
                 
             }
-            else if(data.command==3){
-                data.msg="";
-                data.clientid="";
-                /*var ms=JSON.stringify(data);
-                //console.log("public key is: "+publicKey)
-                const encryptedData = crypto.publicEncrypt(
-                    {
-                        key: publicKey,
-                        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-                        oaepHash: "sha256",
-                    },
-                    // We convert the data string to a buffer using `Buffer.from`
-                    Buffer.from("Aasitha")
-                )
-                console.log(`encrypted text ${encryptedData.toString("base64")}`);*/
-                socket.write(JSON.stringify(data));
-            }else if(data.command==4){
+            else if(data.command==4){
                 readLine.question("Enter the destination client",(ans)=>{
                     data.clientid=ans;
                     data.msg="";
@@ -203,9 +189,22 @@ socket.on("connect",()=>{
                 data.msg=message;
                 if(message=="requests"){
                     data.command=5;
+                }else if(message=="3"){
+                    data.command=3;
+                    data.clientid=""    
+                }else if(message=="4"){
+                    readLine.question("Enter the destination client",(ans)=>{
+                        data.command=4;
+                        data.clientid=ans;
+                        data.msg="";
+                        
+                    })
+                }else if(message==5){
+
                 }
                 socket.write(JSON.stringify(data))
             })
+            
             socket.on('timeout', () => {
                 socket.write('quit');
                 socket.end();
@@ -234,7 +233,6 @@ socket.on("connect",()=>{
        
 })
    
-
 
 
 

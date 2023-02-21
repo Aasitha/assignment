@@ -57,6 +57,7 @@ server.on("connection",socket=>{
             
         
             if(data.command==2){
+                
                 socket.username=data.uname;
                 socket.isInChat=false;
                 socket.isInGroup=false;
@@ -64,8 +65,9 @@ server.on("connection",socket=>{
                 socket.partner="";
                 sockets[socket.username]=socket;
                 socket.write(`successfully logged in as ${socket.username}\n`);
+                
             }
-            else if(data.command2==3){
+            else if(data.command==3){
             
             
             
@@ -83,7 +85,7 @@ server.on("connection",socket=>{
             socket.destroy();
             console.log(Object.keys(sockets))
             console.log(`the number of active clients are ${Object.keys(sockets).length}`)
-        }else if(data.command2==4){
+        }else if(data.command==4){
             socket.username=data.uname;
             
             sockets[socket.username]=socket;
