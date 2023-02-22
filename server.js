@@ -244,7 +244,7 @@ server.on("connection", socket => {
         } else if (data.command == -1) {
             var req = "";
             socket.requests.forEach(person => {
-                req += person;
+                req += person+",";
             })
             if (req.length == 0) {
                 data2.success = false;
@@ -254,7 +254,7 @@ server.on("connection", socket => {
                 data2.msg = req;
             }
             socket.write(JSON.stringify(data2))
-        } else if (data.command == "accept") { 
+        } else if (data.command == -2) { 
             
             socket.patner = data.clientid;
             sockets[data.clientid].patner = socket.username;

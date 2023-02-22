@@ -17,7 +17,6 @@ async function viewActiveClients() {
     socket.write(JSON.stringify(data));
 }
 async function requestToClients() {
-    "Your request is being accepted"
     data.command = 0;
     socket.write(JSON.stringify(data));
 
@@ -33,10 +32,6 @@ async function requestToClients2(activeUsers) {
 async function cl() {
     await setTimeout(() => {
         term.clear();
-
-
-
-
     }, 2000);
 }
 const sample = [{
@@ -240,14 +235,14 @@ socket.on("connect", () => {
                 inquirer.prompt([
                     {
                         type: 'list',
-                        name: 'select to accept request',
+                        name: 'opening options',
                         //message: 'Which is better?',
                         choices: requests,
                     },
                 ])
                     .then(answers => {
-                        data.clientid=answers['select to accept request'];
-                        data.command="accept";
+                        data.clientid=answers['opening options'];
+                        data.command=-2;
                         socket.write(JSON.stringify(data));
 
                     });
