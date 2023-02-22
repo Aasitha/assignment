@@ -4,13 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node server.js",
+    "client": "node client.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^4.1.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "inquirer": "^8.0.0",
     "mongodb": "^5.0.1",
     "mongoose": "^6.9.2",
     "prompt-sync": "^4.2.0",
