@@ -5,103 +5,12 @@ const prompt = require("prompt-sync")({ sigint: true });
 var inquirer = require("inquirer");
 var chalk = require("chalk");
 var activeUsers = [];
+var chat = false;
 const readLine = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
 });
-const socket = net.connect({
-    port: 1235
-})
-async function viewActiveClients() {
-    data.command = 3;
-    socket.write(JSON.stringify(data));
-}
-async function requestToClients() {
-    data.command = 0;
-    socket.write(JSON.stringify(data));
-
-}
-async function acceptRequests() {
-    data.command = -1;
-    
-    socket.write(JSON.stringify(data));
-}
-async function requestToClients2(activeUsers) {
-
-}
-async function cl() {
-    await setTimeout(() => {
-        term.clear();
-    }, 2000);
-}
-const sample = [{
-    type: "input",
-    name: "action",
-    message: "enter name:"
-
-}, {
-    type: "password",
-    mask: "*",
-    name: "password",
-    message: "enter password"
-}]
 var data = {
-
-}
-var tasks = [
-    "view active clients",
-    "start 1:1 session",
-    "view requests"
-]
-
-async function task() {
-    await inquirer.prompt([
-        {
-            type: 'list',
-            name: 'opening options',
-            //message: 'Which is better?',
-            choices: tasks
-        },
-    ])
-        .then(answers => {
-            //console.log(answers)
-            if (answers['opening options'] == "view active clients") {
-                viewActiveClients();
-
-
-
-            } else if (answers["opening options"] == "start 1:1 session") {
-                requestToClients();
-            }
-            else if (answers["opening options"] == "view requests") {
-                acceptRequests();
-            }
-        });
-}
-async function fun() {
-    await inquirer.prompt(loginQstns).then((answers) => {
-        data.uname = answers.username;
-        data.pass = answers.password
-        data.command = 1;
-
-    })
-    socket.write(JSON.stringify(data));
-    //console.log("demo");
-
-
-
-}
-async function fun2() {
-    await inquirer.prompt(loginQstns).then((answers) => {
-        data.uname = answers.username;
-        data.pass = answers.password
-        data.command = 2;
-
-    })
-    socket.write(JSON.stringify(data));
-    //console.log("demo");
-
-
 
 }
 
@@ -120,99 +29,247 @@ const loginQstns =
             message: chalk.greenBright.bold("Enter password")
         }
     ]
+const socket = net.connect({
+    port: 1235
+})
+async function fun() {
 
-socket.on("connect", () => {
+    inquirer.prompt(loginQstns).then((answers) => {
+        data.uname = answers.username;
+        data.pass = answers.password
+        data.command = 1;
 
-    async function mainfunc() {
-        await inquirer.prompt([
-            {
-                type: 'list',
-                name: 'opening options',
-                //message: 'Which is better?',
-                choices: ['Register', 'login'],
-            },
-        ])
-            .then(answers => {
-                //console.log(answers)
-                if (answers['opening options'] == "Register") {
+    })
+    socket.write(JSON.stringify(data));
 
 
-                    fun();
-                } else if (answers['opening options'] == "login") {
-                    fun2();
-                }
-            });
-    }
-    mainfunc();
-    socket.on("data", (info) => {
-        //console.log('\x1b[33m%s\x1b[0m', data);
+}
+async function fun2() {
+
+    await inquirer.prompt(loginQstns).then((answers) => {
+        data.uname = answers.username;
+        data.pass = answers.password
+        data.command = 2;
+
+    })
+    socket.write(JSON.stringify(data));
+}
+async function viewActiveClients() {
+    data.command = 3;
+    socket.write(JSON.stringify(data));
+}
+async function requestToClients() {
+    data.command = 0;
+    socket.write(JSON.stringify(data));
+
+}
+async function acceptRequests() {
+    data.command = -1;
+
+    socket.write(JSON.stringify(data));
+}
 
 
-        /*if(data.toString().substring(0,8)=="Requests"){
-            var dat=data.toString();
-
-            dat=dat.substring(8);
-            dat=dat.split(",");
-            
-        }else{*/
-        //console.log('\x1b[33m%s\x1b[0m', data.toString());
-        var data2 = JSON.parse(info);
-
-
-        if (data2.success == false) {
-            console.log('\x1b[33m%s\x1b[0m', data2.msg);
-            if (data.command == 1) {
-                fun();
-            } else if (data.command == 2) {
+var whenInvalid = [
+    "Retry",
+    "Exit"
+]
+var afterRegister = [
+    "Login",
+    "Exit"
+]
+async function afterRegisterFunc() {
+    await inquirer.prompt([
+        {
+            type: "list",
+            name: "opening options",
+            choices: afterRegister
+        }
+    ]).then((answers) => {
+        if (answers['opening options'] = "Login") {
+            setTimeout(() => {
+                term.clear();
                 fun2();
-            } else if (data.command == -1) {
-                task();
+            }, 2000);
+        } else {
+            process.exit();
+        }
+    })
+}
+async function whenInvalidFuncRegister() {
+    await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'opening options',
+            //message: 'Which is better?',
+            choices: whenInvalid
+        },
+    ])
+        .then(answers => {
+            //console.log(answers)
+            if (answers['opening options'] == "Retry") {
+                fun();
+
+
+
+            } else if (answers["opening options"] == "Exit") {
+                process.exit();
             }
 
+        });
+}
+async function whenInvalidFuncLogin() {
+    await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'opening options',
+            //message: 'Which is better?',
+            choices: whenInvalid
+        },
+    ])
+        .then(answers => {
+            //console.log(answers)
+            if (answers['opening options'] == "Retry") {
+                fun2();
 
-            /*var options = ['retry', 'exit'];
-            term.singleColumnMenu(options, function (err, res) {
-                if (err) console.log(err)
-                else {
-                    if (res.selectedIndex == 0) {
-                        if (data.command == 1) {
-                            setTimeout(()=>{
-                                term.clear();
-                                fun();
-                            },2000);
-                            
-                            readLine.write(null,{
-                                ctrl:true,
-                                name:"u"
-                            })
 
-                        }else if(data.command==2){
-                            
-                            fun2();
-                            readLine.write(null,{
-                                ctrl:true,
-                                name:"u"
-                            })
-                        }
-                    } else {
-                        process.exit();
-                    }
-                }
-            })*/
+
+            } else if (answers["opening options"] == "Exit") {
+                process.exit();
+            }
+
+        });
+}
+var tasks = [
+    "view active clients",
+    "start 1:1 session",
+    "start group session",
+    "view requests",
+    "create group",
+]
+
+async function task() {
+    await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'opening options',
+
+            choices: tasks
+        },
+    ])
+        .then(answers => {
+            //console.log(answers)
+            if (answers['opening options'] == "view active clients") {
+                setTimeout(() => {
+                    term.clear();
+                    viewActiveClients();
+                }, 1000)
+            } else if (answers["opening options"] == "start 1:1 session") {
+                setTimeout(() => {
+                    term.clear();
+                    requestToClients();
+                }, 1000)
+
+            }
+            else if (answers["opening options"] == "view requests") {
+                setTimeout(() => {
+                    term.clear();
+                    acceptRequests();
+                }, 1000)
+
+            }
+        });
+}
+
+const chatQstn = [
+    {
+        type: "input",
+        name: "message",
+
+    }
+]
+async function takeInput() {
+
+    await inquirer.prompt(chatQstn).then((answers) => {
+
+        data.command = -3;
+        data.msg = answers.message;
+        socket.write(JSON.stringify(data));
+
+    })
+}
+async function mainfunc() {
+    await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'opening options',
+            choices: ['Register', 'login', 'exit'],
+        },
+    ])
+        .then(answers => {
+            if (answers['opening options'] == "Register") {
+                fun();
+            } else if (answers['opening options'] == "login") {
+                fun2();
+            } else if (answers['opening options'] == "exit") {
+                process.exit();
+            }
+        });
+}
+socket.on("connect", () => {
+    mainfunc();
+    socket.on("data", (info) => {
+        var data2 = JSON.parse(info);
+        if (data2.success == false) {
+
+            if (data.command == 1) {
+                setTimeout(() => {
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    whenInvalidFuncRegister();
+                }, 2000);
+            } else if (data.command == 2) {
+                setTimeout(() => {
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    whenInvalidFuncLogin();
+                }, 2000);
+
+            } else if (data.command == -1) {
+                setTimeout(() => {
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    task();
+                })
+
+            } else if (data.command == 4) {
+
+                setTimeout(() => {
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    task();
+                })
+            }
         } else if (data2.success) {
             if (data.command == 1) {
-
-                console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                setTimeout(() => {
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    afterRegisterFunc();
+                }, 1000);
             } else if (data.command == 2) {
-                console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                setTimeout(() => {
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    task();
+                }, 1000)
 
-                task();
             } else if (data.command == 3) {
                 console.log('\x1b[33m%s\x1b[0m', data2.msg);
                 task();
             } else if (data.command == 0) {
                 activeUsers = data2.msg2.split(", ");
-                //requestToClients2(activeUsers);
+                //requestToClients2(activeUsers); 
 
                 inquirer.prompt([
                     {
@@ -227,25 +284,53 @@ socket.on("connect", () => {
                         data.clientid = answers['opening options'];
                         data.command = 4;
                         socket.write(JSON.stringify(data));
+                        //takeInput();
                     });
             } else if (data.command == 4) {
+                chat = data2.chatMode;
                 console.log('\x1b[33m%s\x1b[0m', data2.msg);
-            } else if (data.command2 == -1) {
+                if (chat) {
+                    console.log("chat is true only");
+                    data.command = "chatting"
+                    socket.write(JSON.stringify(data));
+                }
+
+            } else if (data.command == -1) {
                 var requests = data2.msg.split(",");
                 inquirer.prompt([
                     {
                         type: 'list',
                         name: 'opening options',
-                        //message: 'Which is better?',
+
                         choices: requests,
                     },
                 ])
                     .then(answers => {
-                        data.clientid=answers['opening options'];
-                        data.command=-2;
+                        data.clientid = answers['opening options'];
+                        data.command = -2;
                         socket.write(JSON.stringify(data));
 
+
                     });
+            } else if (data.command == -2) {
+                setTimeout(()=>{
+                console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    data.command="chatting"
+                socket.write(JSON.stringify(data));
+                })
+
+
+            } else if (data.command == -3) {
+                console.log('\x1b[33m%s\x1b[0m', data2.msg);
+
+            } else if (data.command == -4) {
+                console.log('\x1b[33m%s\x1b[0m', data2.msg);
+
+
+            } else if (data.command == "chatting") {
+                
+                    console.log(chalk.greenBright(data2.msg));
+                takeInput();
             }
 
 
@@ -274,6 +359,13 @@ socket.on("connect", () => {
         socket.destroy();
     });
 
+    readLine.on("line", (message) => {
+        if (chat) {
+            data.msg = message;
+            data.command = -3;
+            socket.write(JSON.stringify(data));
+        }
+    })
 
 
 })

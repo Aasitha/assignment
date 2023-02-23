@@ -180,16 +180,15 @@ server.on("connection", socket => {
 
             //if (data.msg == "") {
             if (sockets[data.clientid].isInChat == false) {
+                data2.chatMode=false;
 
                 sockets[data.clientid].requests.push(socket.username);
                 data2.success = true;
                 data2.msg = `Request is sent to ${data.clientid}`
                 socket.write(JSON.stringify(data2));
-                data2.msg = "`You have a request from ${socket.username}`"
-                sockets[data.clientid].write(JSON.stringify(data2));
 
             } else {
-                data2.success = true;
+                data2.success = false;
                 data2.msg = `${data.clientid} is not available for chat`
                 socket.write(JSON.stringify(data2));
 
@@ -244,27 +243,38 @@ server.on("connection", socket => {
         } else if (data.command == -1) {
             var req = "";
             socket.requests.forEach(person => {
-                req += person+",";
+                req += person + ",";
             })
             if (req.length == 0) {
                 data2.success = false;
                 data2.msg = "Sorry, you have no requests"
             } else {
                 data2.success = true;
+
                 data2.msg = req;
             }
             socket.write(JSON.stringify(data2))
-        } else if (data.command == -2) { 
-            
+        } else if (data.command == -2) {
+
             socket.patner = data.clientid;
-            sockets[data.clientid].patner = socket.username;
+            sockets[socket.patner].patner = socket.username;
             socket.isInChat = true;
-            sockets[data.clientid].isInChat = true;
-            data2.success=true;
-            data2.msg=`You have accepted the request from ${data.clientid}`
+            sockets[socket.patner].isInChat = true;
+            data2.success = true;
+            data2.chatMode = true;
+            data2.msg = `You have accepted the request from ${data.clientid}`
             socket.write(JSON.stringify(data2));
-            data2.msg="Your request is being accepted"
+            data2.msg = "Your request is being accepted"
             sockets[socket.patner].write(JSON.stringify(data2));
+        } else if (data.command == -3) {
+            data2.success = true;
+            data2.msg = `${socket.username}: ${data.msg}`
+            sockets[socket.patner].write(JSON.stringify(data2));
+        }else if(data.command=="chatting"){
+                data2.success=true;
+                data2.msg=`1:1 session started`
+                socket.write(JSON.stringify(data2));
+                
         }
         else if (data.command == 5) {
             socket.username = data.uname;
@@ -427,6 +437,9 @@ server.on("connection", socket => {
         delete sockets[socket.username]
         socket.destroy();
         console.log(`the number of active clients are ${Object.keys(sockets).length}`)
+    })
+    readLine.on("line", (message) => {
+
     })
 
 
