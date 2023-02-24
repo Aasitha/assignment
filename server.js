@@ -137,6 +137,7 @@ server.on("connection", socket => {
                             socket.isInChat = false;
                             socket.isInGroup = false;
                             socket.requests = [];
+                            socket.sentRequest = [];
                             socket.patner = "";
                             sockets[socket.username] = socket;
                             data2.msg = "Logged in";
@@ -159,7 +160,7 @@ server.on("connection", socket => {
 
             var cli = "";
             Object.keys(sockets).forEach(i => {
-                if (i != socket.username) {
+                if (i != socket.username && sockets[i].isInChat == false && sockets[i].isInGroup == false) {
                     cli += i + ", ";
                 }
             })
@@ -175,14 +176,15 @@ server.on("connection", socket => {
             socket.write(JSON.stringify(data2));
             //console.log(typeof(name))
 
-            console.log(`the number of active clients are ${Object.keys(sockets).length}`)
+            console.log(`the number of active clients are ${cli}`)
         } else if (data.command == 4) {
 
             //if (data.msg == "") {
             if (sockets[data.clientid].isInChat == false) {
-                data2.chatMode=false;
+                data2.chatMode = false;
 
                 sockets[data.clientid].requests.push(socket.username);
+                socket.sentRequest.push[data.clientid];
                 data2.success = true;
                 data2.msg = `Request is sent to ${data.clientid}`
                 socket.write(JSON.stringify(data2));
@@ -270,11 +272,25 @@ server.on("connection", socket => {
             data2.success = true;
             data2.msg = `${socket.username}: ${data.msg}`
             sockets[socket.patner].write(JSON.stringify(data2));
-        }else if(data.command=="chatting"){
-                data2.success=true;
-                data2.msg=`1:1 session started`
-                socket.write(JSON.stringify(data2));
-                
+        } else if (data.command == "chatting") {
+            data2.success = true;
+            data2.msg = `1:1 session started between you and ${socket.patner}`
+            socket.write(JSON.stringify(data2));
+
+        } else if (data.command == "logout") {
+            if (socket.sentRequest.length > 0) {
+                console.log(sockets[person].requests);
+                socket.sentRequest.forEach(person => {
+                    var index = sockets[person].requests(socket);
+                    sockets[person].requests.splice(index, 1);
+                    console.log(sockets[person].requests);
+                })
+            }
+
+            delete sockets[socket.username];
+            data2.success = true;
+            data2.msg = "Logged out";
+            socket.write(JSON.stringify(data2));
         }
         else if (data.command == 5) {
             socket.username = data.uname;
@@ -438,9 +454,7 @@ server.on("connection", socket => {
         socket.destroy();
         console.log(`the number of active clients are ${Object.keys(sockets).length}`)
     })
-    readLine.on("line", (message) => {
-
-    })
+    
 
 
 })
