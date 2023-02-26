@@ -14,6 +14,7 @@ const readLine = require('readline').createInterface({
     output: process.stdout
 });
 
+
 /*mongoose.connect("mongodb://localhost:27017/assignment", {
    useNewUrlParser: true,
    useUnifiedTopology: true
@@ -111,6 +112,7 @@ server.on("connection", socket => {
         }
 
         else if (data.command == 2) {
+            
 
             mongoose.set("strictQuery", false);
             mongoose.connect("mongodb://127.0.0.1:27017/assignment", {
@@ -154,6 +156,7 @@ server.on("connection", socket => {
 
         }
         else if (data.command == 3 || data.command == 0) {
+            data2.hadQuit=false;
 
 
 
@@ -182,12 +185,14 @@ server.on("connection", socket => {
             //if (data.msg == "") {
             if (sockets[data.clientid].isInChat == false) {
                 data2.chatMode = false;
+                data2.hadQuit=false;
 
                 sockets[data.clientid].requests.push(socket.username);
                 socket.sentRequest.push[data.clientid];
                 data2.success = true;
                 data2.msg = `Request is sent to ${data.clientid}`
                 socket.write(JSON.stringify(data2));
+                data2.hadQuit=false;
 
             } else {
                 data2.success = false;
@@ -243,6 +248,7 @@ server.on("connection", socket => {
             //} */
 
         } else if (data.command == -1) {
+            data2.hadQuit=false;
             var req = "";
             socket.requests.forEach(person => {
                 req += person + ",";
@@ -265,6 +271,7 @@ server.on("connection", socket => {
             data2.success = true;
             data2.chatMode = true;
             data2.msg = `You have accepted the request from ${data.clientid}`
+            data2.hadQuit=false;
             socket.write(JSON.stringify(data2));
             data2.msg = "Your request is being accepted"
             sockets[socket.patner].write(JSON.stringify(data2));
@@ -290,6 +297,63 @@ server.on("connection", socket => {
             delete sockets[socket.username];
             data2.success = true;
             data2.msg = "Logged out";
+            socket.write(JSON.stringify(data2));
+        }else if(data.command=="quit"){
+            //data2.msg=`You have terminated the session with ${socket.patner}`;
+            data2.success=true;
+            socket.write(JSON.stringify(data2));
+            socket.isInChat=false;
+            sockets[socket.patner].isInChat=false;
+            //data2.msg=`Session is terminated by ${socket.username}`;
+            data2.hadQuit=true;
+            sockets[socket.patner].write(JSON.stringify(data2));
+            
+            
+            
+            //socket.write(JSON.stringify(data));
+        }else if(data.command=="quitting"){
+            data2.hadQuit=false;
+            if(socket.requests.indexOf(socket.patner)!=-1){
+                socket.requests.splice(socket.requests.indexOf(socket.patner),1);
+            }
+            data2.msg=`session terminated between you and ${socket.patner}`;
+            //console.log(sockets[socket.patner].patner)
+            
+            socket.patner="";
+            //console.log(`patner of ${socket.username} is ${socket.patner}`);
+            data2.success=true;
+            socket.write(JSON.stringify(data2));
+            //console.log("command is: "+data.command);
+
+        }else if(data.command="neutral"){
+            data2.success=true;
+            socket.write(JSON.stringify(data2));
+            data2.command="";
+            data2.hatQuit=false;
+        }else if(data.command=="create group"){
+            var grpinfo = {
+                name: data.clientid,
+                admin: socket.username,
+                participants: []
+            }
+            groups[data.clientid] = grpinfo;
+            groups[data.clientid].participants.push(socket.username)
+            data2.success=true;
+            data2.msg=`you have created group ${data.clientid}`
+            socket.write(JSON.stringify(data2));
+        }else if(data.command=="view groups"){
+            var grps="";
+            groups.forEach(grp=>{
+                grps+=grp+", ";
+            })
+            if(grps.length==0){
+                data2.success=false;
+                data2.msg="Sorry, there are no active groups to join";
+            }else{
+                var results="The active groups are: "+grps
+                data2.success=true;
+                data2.msg=results;
+            }
             socket.write(JSON.stringify(data2));
         }
         else if (data.command == 5) {
