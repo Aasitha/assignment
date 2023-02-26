@@ -5,8 +5,9 @@ const prompt = require("prompt-sync")({ sigint: true });
 var inquirer = require("inquirer");
 var chalk = require("chalk");
 var activeUsers = [];
-var chat = false;
-const readLine = require('readline').createInterface({
+var senderChat=false;
+var receiverChat=false;
+const readLine2 = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
 });
@@ -34,10 +35,12 @@ const socket = net.connect({
 })
 async function fun() {
 
-    inquirer.prompt(loginQstns).then((answers) => {
+    var prompt= await inquirer.prompt(loginQstns).then((answers) => {
         data.uname = answers.username;
         data.pass = answers.password
         data.command = 1;
+        
+        
 
     })
     socket.write(JSON.stringify(data));
@@ -46,10 +49,11 @@ async function fun() {
 }
 async function fun2() {
 
-    await inquirer.prompt(loginQstns).then((answers) => {
+    var prompt=await inquirer.prompt(loginQstns).then((answers) => {
         data.uname = answers.username;
         data.pass = answers.password
         data.command = 2;
+        
 
     })
     socket.write(JSON.stringify(data));
@@ -65,7 +69,6 @@ async function requestToClients() {
 }
 async function acceptRequests() {
     data.command = -1;
-
     socket.write(JSON.stringify(data));
 }
 
@@ -79,7 +82,7 @@ var afterRegister = [
     "Exit"
 ]
 async function afterRegisterFunc() {
-    await inquirer.prompt([
+    var prompt=await inquirer.prompt([
         {
             type: "list",
             name: "opening options",
@@ -95,6 +98,7 @@ async function afterRegisterFunc() {
             process.exit();
         }
     })
+    prompt.close();
 }
 async function whenInvalidFuncRegister() {
     await inquirer.prompt([
@@ -140,12 +144,17 @@ async function whenInvalidFuncLogin() {
 
         });
 }
+
 var tasks = [
     "view active clients",
     "start 1:1 session",
     "start group session",
     "view requests",
     "create group",
+    "Delete group",
+    "Edit username and password",
+    "Logout",
+    "Exit"
 ]
 
 async function task() {
@@ -177,6 +186,9 @@ async function task() {
                     acceptRequests();
                 }, 1000)
 
+            }else if(answers["opening options"]=="Logout"){
+                data.command="logout";
+                socket.write(JSON.stringify(data));
             }
         });
 }
@@ -190,13 +202,20 @@ const chatQstn = [
 ]
 async function takeInput() {
 
-    await inquirer.prompt(chatQstn).then((answers) => {
+    /* await inquirer.prompt(chatQstn).then((answers) => {
 
         data.command = -3;
         data.msg = answers.message;
         socket.write(JSON.stringify(data));
 
-    })
+    }) */
+    var msg=prompt();
+    if(msg!="quit"){
+        data.command=-3;
+        data.msg=msg;
+        socket.write(JSON.stringify(data));
+        takeInput();
+    }
 }
 async function mainfunc() {
     await inquirer.prompt([
@@ -268,29 +287,44 @@ socket.on("connect", () => {
                 console.log('\x1b[33m%s\x1b[0m', data2.msg);
                 task();
             } else if (data.command == 0) {
+                if(data2.msg2.length==0){
+                    setTimeout(() => {
+                        term.clear();
+                        console.log('\x1b[33m%s\x1b[0m', "Sorry, no clients available");
+                        task();
+                    }, 1000);
+                }
+                else{
                 activeUsers = data2.msg2.split(", ");
-                //requestToClients2(activeUsers); 
-
+                activeUsers.pop(activeUsers[activeUsers.length-1])
+                activeUsers.push("Go back");
                 inquirer.prompt([
                     {
                         type: 'list',
                         name: 'opening options',
-                        //message: 'Which is better?',
                         choices: activeUsers,
                     },
                 ])
                     .then(answers => {
-                        //console.log(answers)
-                        data.clientid = answers['opening options'];
-                        data.command = 4;
-                        socket.write(JSON.stringify(data));
-                        //takeInput();
+                        if (answers['opening options'] == "Go back")
+                            setTimeout(()=>{
+                                term.clear();
+                                task();
+                            })
+                        else {
+                            //console.log(answers)
+                            data.clientid = answers['opening options'];
+                            data.command = 4;
+                            socket.write(JSON.stringify(data));
+                        }
+
                     });
+                }
             } else if (data.command == 4) {
-                chat = data2.chatMode;
+                 senderChat = data2.chatMode;
                 console.log('\x1b[33m%s\x1b[0m', data2.msg);
-                if (chat) {
-                    console.log("chat is true only");
+                if (senderChat) {
+                    //console.log("chat is true now");
                     data.command = "chatting"
                     socket.write(JSON.stringify(data));
                 }
@@ -313,10 +347,11 @@ socket.on("connect", () => {
 
                     });
             } else if (data.command == -2) {
-                setTimeout(()=>{
-                console.log('\x1b[33m%s\x1b[0m', data2.msg);
-                    data.command="chatting"
-                socket.write(JSON.stringify(data));
+                setTimeout(() => {
+                    receiverChat=data2.chatMode;
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    data.command = "chatting"
+                    socket.write(JSON.stringify(data));
                 })
 
 
@@ -329,8 +364,26 @@ socket.on("connect", () => {
 
             } else if (data.command == "chatting") {
                 
+                setTimeout(()=>{
+                    term.clear();
                     console.log(chalk.greenBright(data2.msg));
-                takeInput();
+                    takeInput();
+                    
+                    
+
+                    
+                    
+                })
+            
+
+                
+                
+            }else if(data.command=="logout"){
+                setTimeout(()=>{
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    mainfunc();
+                })
             }
 
 
@@ -358,14 +411,12 @@ socket.on("connect", () => {
         console.log('The server seems to have been shut down...');
         socket.destroy();
     });
-
-    readLine.on("line", (message) => {
-        if (chat) {
-            data.msg = message;
-            data.command = -3;
-            socket.write(JSON.stringify(data));
-        }
+    readLine2.on("line",(message)=>{
+        console.log(message)
+        
     })
+   
+
 
 
 })
