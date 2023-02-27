@@ -6,6 +6,33 @@ const userSchema = new mongoose.Schema({
     username: String,
     password: String
 });
+const privateKey = `-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAztSZNHNFSHpbG5UFtcK94d66yL1tKG4upzDVJDbJhEENm26f
+k5jAslYfw2JUtNCZTUXkGRrS0uCe3llZVyYpfyWPxuRt4aOO3wjTlIY9nd3LvOiy
+5dySFrrIc9D5JdzrcTWJHJiF1QM/xELhnGe1ykz2+iJcyk/O9K+k63vklEstA8eH
+MiHu2l6LSvlGhgPqoPvAylh/gC8zmg7r1NRNApMpVq15jPjzra+4p28afngYqERN
++mb67v+RQGWQ8K8sQWJE8rUfsXZWa4VkvSW3GQeT6IN/B7LxtmGevsBf0rhqSxof
+hlObFtAkEYleDOvPyQLD+Z9oQSiiA1VstNBJ3wIDAQABAoIBAAJrrItXmgT6IZzW
+BqYU7GH7WFZHGULy3yrnwGbXGU6p8D3UcpuomwC7T03bFcCz/EdSPRQqIzOCm3lg
+tFH3yV6Kkv8x5zNP1bk4gjlnxMrXMK46TvWvuin376ajWHcf+cVuafditZZDnnhu
+i/Nnp1IBypYs1scrXfGxKI30+jzeCvPSHql03EzPfogO19EvVA+52x3mWXpXxt4p
+B8mZyvQbA8Cm/ZhLQRTAZ0Ff6E0DrTZ4kMhTtA8SqHZ1+7OxDrYzW0C73aFtG3g5
+DlQEg1WhVd6tMVvTBJCQOZF6QcnBMps8K9aApdJs3BiBs7MOdQTxFqdTP9uH6kt7
+XGMlhLECgYEA/swC1nVTi35CcblSD9KEJWfvd+De+BxRIzc3LGRO06gxpLQ+LbRu
+uM+GW2u3E1mQNJUZ2KFY9hqkh790cDg3CcpRV1h3MeGu8zBQFxDSc2gRl9z9UBqx
+viX9KEZjmhXUMoU9Yy1WibEBpxvSqpsNpEaM+340TpQg/7iqoSNXz/kCgYEAz86b
+ec6nwJdBXiQNY2qwaxZdG+9Tr+DyBQ8Z2e4ogGVn6DVg3JstUTp0IDpUVvDYdjdJ
+agkfPvrVWebtEXnNHF8DF6CLPdGJAf6e7IWpQk7xeooAVKLIVL8wr09eBNDsG5eK
+8DDGOMIIY84QFPxUTGtk5WHAJm6w6ZXhPjcNDpcCgYAVs66yMYASK4jhQtWYf2e9
+/+JHpaGYJGFMzJEoeMq2AGdqDegV4H5lw1dARiZrwX8k22Y+K0/2dkJ5RXdXb5JQ
+hSj0dZaBayWJlR3dOROTvNNyyeHRhtSIy5eKbKRjJWTTgMG/xsbOJ4NqhlYlLdu1
+mES9zvwJjVhaL5Jo8yexkQKBgEcRZJCiwTIXSG62q7F9Ujo9Wrhr/9Xde0eJo5Cp
+Z0aJ56A9aRPpKfVmpUJEUIWvNogvXjcaSYpTZFWrqRXZ7vCt+bPB3vzURSPefWFs
+ULdxohoDShun1BVPkYnS/ddtz+Gb0RNVyuSsTww687sJlJbR/56G8Jz0LCKmdHK/
+hwKfAoGBAPj/E3ZAJFOcapyIxJ0SZjjS+LjFFvR0Y2ljiTjEV9zttPLpxiRtYKLE
+iOtR075eZqgTeJdw/+D56nBcAWKwRGjh/aLVFqGniZpgv3sJLSgcMpsAv+7H5iD5
+xHySp77NLGkmDIR0vrQVDHO7/izso4iC/0wKWEWgWzW9FHNuAD9a
+-----END RSA PRIVATE KEY-----`
 var data2 = {
 
 }
@@ -26,6 +53,8 @@ let clientid = 0;
 const crypto = require("crypto");
 const { exit } = require('process');
 const { stringify } = require('querystring');
+var publicKey = "MIIEowIBAAKCAQEAx9m/lkm5xZlBgqZwrxOGgU0+abcd6WF+LRnPs8vlalGZWXBgjxUNyIiNhcLe56Fi+5sT924k7zvN34dMe96HsUqgtkKIdqZXKYFpPWELBWXXScfYe4JaSJoxGSAwUN82XXLLOD/F6A9J5+AEOs1fbqfXYA/ZXXYd2Za/MxJLzxs3YTlKBlHDOkd+cBjXTGh87Rdm5v/HQx+0+L7pE47pwrqltP/tDDvS9jg5wELAWZgaHiImkR7zEEvaE14E9licnwR3wP8gNXU2CYVjuCheDAxOjcQLXzL/dZHjNIXk+g2Jw8YFSj/RUM2DhJ7w+aUmDwlgTh+2YGrKxJKz2GIOmwIDAQABAoIBADu2xlYjhUyTdE2TacwGK4RrDiEMQ/W92bOkKLlyTQQtiYJ933whMFMg6hhzl6LiR+8h8R9XW9XXqrYFeUbxwN2qjMaorpm1LgoKzuU2H9LnESLMgdS1qEBVQiJdydIAQABAEpSmCX5DQzPzbZAcWU14/ROI6MvSRS0Eq/CYoOoqkgWWr6X+THN1pAb+gtpcKUQI/p6xnZA2/ODkXmUlemRM8sRKX0nsrIF0WGTEYDEsvdHn8p/A5XdlxPOe6wKgCZa7nsewIuOE2mVXNJlhZYXGPp1nGx3poL0qpkWDR7VVJA10JwwY9y7MSa3AWtkxpXXd4rZZ8u4/teBbbVBAVhECgYEA9gnI4/Ainq8rtbi+EbkOowMN76IqTB4HYGzfNRIzdRcPomFrDfpPytzs2IRKRn7PFxgDNw+Op5dyAVhOW7mG36323WSkkWMdzemj1LbJBulsq1+zQBE37Fby/TnDXZnwER/RvNOSrfyHO9MuVtUmg6uyd3EePdQ1KJZDt33wq0UCgYEAz/E5KUmJV5xPy8sP3ToMLMvBh0ZLh2jpaMJYxUSvoJLJA+KxPutHLC3jAVCC/MadNBekWqHO+mNXqKfETHnU2MBaRVC7lHKYshBvCbP6nMYsOMtrLPl3NaYRPoJjLs8zSRJ/sH9Aj6g2KufFkf2ickjwq10dYOig/T+FotuwgF8CgYA2g7qATr/M+zErJZDvqlpE4jNfSkYm8WxfACCAyNSf+AkdyIoI4dJ2N3c/DijK7+QA0PA9bfQEzDiVdbR+/F+XBhuxuFACary62C7Vvd5S6ruKST0VT/tdIXLbisXv4mDf2nYFabeRV2e7aLJWyQmsmQmFD4pM1s0kfg7pBD2kJQKBgQCT0nr9M86T3oYHbPJ5JTPUgICyZrF4sIcFNuueSObFMrP9tCCmhuFQsconfBGyGotUpd3rpA2ciBSfy6vLZex+rbc+gVbn/9M2+mHFNxHYczSqp0kobqtlEwo9MrnJY/ikYKcvVDcUKNNhCuSzlOfvcJTObWJeKuGPRqH8lUpS5wKBgDTq1E5JQyX53TWxzGwV2HhbJPavds6MJ8C0OAbbOxCAs5PYXjkuJHjjFS4ZlInHNepOgSxkdb8khxZdp3tCMgeVCoa3kzjlvOCELYA4vcz/ChdDpUdEqwoor5igg+6nYnLOiq7du7MHdN9yEM1Xb6gubV5OAIPnO1u3kENZNI2N"
+
 
 // The `generateKeyPairSync` method accepts two arguments:
 // 1. The type ok keys we want, which in this case is "rsa"
@@ -67,6 +96,8 @@ server.on("connection", socket => {
         if (data.command == 1) {
             username = data.uname;
             password = data.pass;
+            var decrypt = crypto.privateDecrypt(privateKey, Buffer.from(password.toString("base64"), "base64"));
+            password = decrypt.toString();
             mongoose.set("strictQuery", false);
             mongoose.connect("mongodb://127.0.0.1:27017/assignment", {
                 useNewUrlParser: true,
@@ -112,8 +143,7 @@ server.on("connection", socket => {
         }
 
         else if (data.command == 2) {
-            
-
+            //console.log("Before Decryption: "+data.pass);
             mongoose.set("strictQuery", false);
             mongoose.connect("mongodb://127.0.0.1:27017/assignment", {
                 useNewUrlParser: true,
@@ -126,6 +156,9 @@ server.on("connection", socket => {
                 }
 
                 var userModel = mongoose.model('users', userSchema);
+                var decrypt = crypto.privateDecrypt(privateKey, Buffer.from(data.pass.toString("base64"), "base64"));
+                data.pass = decrypt.toString();
+                //console.log("After Decryption: "+data.pass);
                 userModel.find({ username: data.uname, password: data.pass }, function (err, docs) {
                     if (err) {
                         console.log("Error: " + err);
@@ -134,6 +167,10 @@ server.on("connection", socket => {
                             data2.success = false;
                             data2.msg = "Invalid login. Please try again";
                         } else {
+                            if(Object.keys(sockets).indexOf(socket.username)!=-1){
+                                data.success=fail;
+                                data2.msg=`Already logged in`;
+                            }else{
                             data2.success = true;
                             socket.username = data.uname;
                             socket.isInChat = false;
@@ -141,9 +178,12 @@ server.on("connection", socket => {
                             socket.requests = [];
                             socket.sentRequest = [];
                             socket.patner = "";
+                            socket.grpPatner = "";
                             sockets[socket.username] = socket;
+                            
                             data2.msg = "Logged in";
                             console.log(`Number of active clients are: ${Object.keys(sockets).length}`);
+                            }
                         }
                         socket.write(JSON.stringify(data2));
                     }
@@ -156,7 +196,7 @@ server.on("connection", socket => {
 
         }
         else if (data.command == 3 || data.command == 0) {
-            data2.hadQuit=false;
+            data2.hadQuit = false;
 
 
 
@@ -185,14 +225,14 @@ server.on("connection", socket => {
             //if (data.msg == "") {
             if (sockets[data.clientid].isInChat == false) {
                 data2.chatMode = false;
-                data2.hadQuit=false;
+                data2.hadQuit = false;
 
                 sockets[data.clientid].requests.push(socket.username);
                 socket.sentRequest.push[data.clientid];
                 data2.success = true;
                 data2.msg = `Request is sent to ${data.clientid}`
                 socket.write(JSON.stringify(data2));
-                data2.hadQuit=false;
+                data2.hadQuit = false;
 
             } else {
                 data2.success = false;
@@ -248,7 +288,7 @@ server.on("connection", socket => {
             //} */
 
         } else if (data.command == -1) {
-            data2.hadQuit=false;
+            data2.hadQuit = false;
             var req = "";
             socket.requests.forEach(person => {
                 req += person + ",";
@@ -271,7 +311,7 @@ server.on("connection", socket => {
             data2.success = true;
             data2.chatMode = true;
             data2.msg = `You have accepted the request from ${data.clientid}`
-            data2.hadQuit=false;
+            data2.hadQuit = false;
             socket.write(JSON.stringify(data2));
             data2.msg = "Your request is being accepted"
             sockets[socket.patner].write(JSON.stringify(data2));
@@ -279,7 +319,80 @@ server.on("connection", socket => {
             data2.success = true;
             data2.msg = `${socket.username}: ${data.msg}`
             sockets[socket.patner].write(JSON.stringify(data2));
-        } else if (data.command == "chatting") {
+        }
+        else if (data.command == -9) {
+            //console.log("selected command is: "+data.command);
+            var grpinfo = {
+                name: data.clientid,
+                admin: socket.username,
+                participants: []
+            }
+            groups[data.clientid] = grpinfo;
+            groups[data.clientid].participants.push(socket.username)
+            data2.success = true;
+
+            data2.msg = `you have created group ${data.clientid}`
+            //console.log("groups are: "+Object.keys(groups));
+            socket.write(JSON.stringify(data2));
+            //console.log(JSON.stringify(data2));
+        }
+        else if (data.command == "group chatting") {
+            data2.success = true;
+            socket.grpPatner = data.clientid;
+            data2.msg = "group chat is started";
+            if (groups[socket.grpPatner].participants.indexOf(socket.username) == -1) {
+                groups[socket.grpPatner].participants.push(socket.username);
+            }
+            socket.write(JSON.stringify(data2));
+        } else if (data.command == "groupQuit") {
+            data2.msg = `${socket.username} has left the chat`;
+            data2.success = true;
+            groups[socket.grpPatner].participants.forEach(person => {
+                if (person != socket.username) {
+
+                    sockets[person].write(JSON.stringify(data2));
+                }
+            })
+            data2.success = true;
+            data2.msg = "You have left the group";
+            groups[socket.grpPatner].participants.splice(groups[socket.grpPatner].participants.indexOf(socket.username), 1);
+            console.log(`current participants in ${socket.grpPatner} are ${groups[socket.grpPatner].participants}`);
+            socket.write(JSON.stringify(data2));
+        }
+        else if (data.command == -10 || data.command == "group session" || data.command == "deletegroupList") {
+            //console.log("command is: "+data.command)
+            var grps = "";
+            Object.keys(groups).forEach(grp => {
+                grps += grp + ", ";
+            })
+            data2.msg2 = grps;
+            if (grps.length > 0) {
+
+                data2.msg = "The active groups are: " + grps
+                data2.success = true;
+
+                socket.write(JSON.stringify(data2));
+            } else {
+                data2.success = false;
+                data2.msg = "Sorry, there are no active groups to join";
+                socket.write(JSON.stringify(data2));
+            }
+
+        } else if (data.command == "group chat") {
+
+            socket.isInGroup = true;
+            //groups[data.clientid].participants.push(socket.username);
+            groups[socket.grpPatner].participants.forEach(person => {
+                if (person != socket.username) {
+                    data2.msg = `${socket.username}: ${data.msg}`
+                    data2.success = true;
+                    sockets[person].write(JSON.stringify(data2));
+                }
+
+            })
+
+        }
+        else if (data.command == "chatting") {
             data2.success = true;
             data2.msg = `1:1 session started between you and ${socket.patner}`
             socket.write(JSON.stringify(data2));
@@ -298,63 +411,84 @@ server.on("connection", socket => {
             data2.success = true;
             data2.msg = "Logged out";
             socket.write(JSON.stringify(data2));
-        }else if(data.command=="quit"){
-            //data2.msg=`You have terminated the session with ${socket.patner}`;
-            data2.success=true;
-            socket.write(JSON.stringify(data2));
-            socket.isInChat=false;
-            sockets[socket.patner].isInChat=false;
-            //data2.msg=`Session is terminated by ${socket.username}`;
-            data2.hadQuit=true;
-            sockets[socket.patner].write(JSON.stringify(data2));
-            
-            
-            
-            //socket.write(JSON.stringify(data));
-        }else if(data.command=="quitting"){
-            data2.hadQuit=false;
-            if(socket.requests.indexOf(socket.patner)!=-1){
-                socket.requests.splice(socket.requests.indexOf(socket.patner),1);
+        }
+        else if (data.command == "deleteGroup") {
+            if (socket.username == groups[data.clientid].admin) {
+                delete groups[data.clientid];
+                console.log(`Active groups are: ${Object.keys(groups)}`);
+                data2.success = true;
+                data2.msg = `Group ${data.clientid} successfully deleted`;
+                socket.write(JSON.stringify(data2));
+            } else {
+                data2.success = false;
+                data2.msg = `Sorry, only admin  ${groups[data.clientid].admin} has permission to delete the group`;
+                socket.write(JSON.stringify(data2));
             }
-            data2.msg=`session terminated between you and ${socket.patner}`;
+        } else if (data.command == "editInfo") {
+            var decrypt = crypto.privateDecrypt(privateKey, Buffer.from(data.pass.toString("base64"), "base64"));
+            data.pass = decrypt.toString();
+            /* console.log("username: "+data.uname);
+            console.log("password: "+data.pass); */
+            mongoose.set("strictQuery", false);
+            mongoose.connect("mongodb://127.0.0.1:27017/assignment", {
+                useNewUrlParser: true,
+                useUnifiedTopology: true
+            }, (err) => {
+                if (err) {
+                    console.log("error: " + err);
+                } else {
+
+                }
+
+                var userModel = mongoose.model('users', userSchema);
+                userModel.findOneAndUpdate({ username: data.uname, password: data.pass }, { username: data.u, password: data.p }, null, function (err, docs) {
+                    if (err) console.log(err);
+                    else {
+                        console.log(docs);
+                    }
+                });
+
+                data2.success = true;
+                data2.msg = "username and password updated";
+                socket.username=data.u;
+                socket.write(JSON.stringify(data2));
+            })
+
+        }
+        else if (data.command == "quit") {
+            //data2.msg=`You have terminated the session with ${socket.patner}`;
+            data2.success = true;
+            socket.write(JSON.stringify(data2));
+            socket.isInChat = false;
+            sockets[socket.patner].isInChat = false;
+            //data2.msg=`Session is terminated by ${socket.username}`;
+            data2.hadQuit = true;
+            sockets[socket.patner].write(JSON.stringify(data2));
+        } else if (data.command == "exitCommand") {
+            delete sockets[socket.username];
+            data2.msg = "Exited";
+            data2.success = true;
+            socket.write(JSON.stringify(data2));
+        }
+        else if (data.command == "quitting") {
+            data2.hadQuit = false;
+            if (socket.requests.indexOf(socket.patner) != -1) {
+                socket.requests.splice(socket.requests.indexOf(socket.patner), 1);
+            }
+            data2.msg = `session terminated between you and ${socket.patner}`;
             //console.log(sockets[socket.patner].patner)
-            
-            socket.patner="";
+
+            socket.patner = "";
             //console.log(`patner of ${socket.username} is ${socket.patner}`);
-            data2.success=true;
+            data2.success = true;
             socket.write(JSON.stringify(data2));
             //console.log("command is: "+data.command);
 
-        }else if(data.command="neutral"){
-            data2.success=true;
+        } else if (data.command = "neutral") {
+            data2.success = true;
             socket.write(JSON.stringify(data2));
-            data2.command="";
-            data2.hatQuit=false;
-        }else if(data.command=="create group"){
-            var grpinfo = {
-                name: data.clientid,
-                admin: socket.username,
-                participants: []
-            }
-            groups[data.clientid] = grpinfo;
-            groups[data.clientid].participants.push(socket.username)
-            data2.success=true;
-            data2.msg=`you have created group ${data.clientid}`
-            socket.write(JSON.stringify(data2));
-        }else if(data.command=="view groups"){
-            var grps="";
-            groups.forEach(grp=>{
-                grps+=grp+", ";
-            })
-            if(grps.length==0){
-                data2.success=false;
-                data2.msg="Sorry, there are no active groups to join";
-            }else{
-                var results="The active groups are: "+grps
-                data2.success=true;
-                data2.msg=results;
-            }
-            socket.write(JSON.stringify(data2));
+            data2.command = "";
+            data2.hatQuit = false;
         }
         else if (data.command == 5) {
             socket.username = data.uname;
@@ -518,7 +652,7 @@ server.on("connection", socket => {
         socket.destroy();
         console.log(`the number of active clients are ${Object.keys(sockets).length}`)
     })
-    
+
 
 
 })

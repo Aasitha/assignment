@@ -1,20 +1,29 @@
 const net = require('net');
 var term = require("terminal-kit").terminal;
 var term2 = require("terminal-kit").terminal;
+const crypto = require("crypto");
 var stdin = process.openStdin();
 const prompt = require("prompt-sync")({ sigint: true });
 var inquirer = require("inquirer");
 var chalk = require("chalk");
+const { stringify } = require('querystring');
 var activeUsers = [];
 var senderChat = false;
 var receiverChat = false;
 var quit = false;
+var grpChat=false;
 var readLine = require('readline').createInterface({
     input: process.stdin,
     output: process.stdout
 });
-
-
+const publicKey=`-----BEGIN RSA PUBLIC KEY-----
+MIIBCgKCAQEAztSZNHNFSHpbG5UFtcK94d66yL1tKG4upzDVJDbJhEENm26fk5jA
+slYfw2JUtNCZTUXkGRrS0uCe3llZVyYpfyWPxuRt4aOO3wjTlIY9nd3LvOiy5dyS
+FrrIc9D5JdzrcTWJHJiF1QM/xELhnGe1ykz2+iJcyk/O9K+k63vklEstA8eHMiHu
+2l6LSvlGhgPqoPvAylh/gC8zmg7r1NRNApMpVq15jPjzra+4p28afngYqERN+mb6
+7v+RQGWQ8K8sQWJE8rUfsXZWa4VkvSW3GQeT6IN/B7LxtmGevsBf0rhqSxofhlOb
+FtAkEYleDOvPyQLD+Z9oQSiiA1VstNBJ3wIDAQAB
+-----END RSA PUBLIC KEY-----`
 var data = {
 
 }
@@ -49,8 +58,10 @@ async function fun() {
      })*/
     data.uname = prompt("Enter username: ");
     data.pass = prompt("Enter password: ");
+    var encrypted=crypto.publicEncrypt(publicKey,Buffer.from(data.pass));
+    data.pass=encrypted.toString("base64");
     data.command = 1;
-
+    
     socket.write(JSON.stringify(data));
 
 
@@ -67,6 +78,8 @@ async function fun2() {
     data.uname = prompt("Enter username: ");
     data.pass = prompt("Enter password: ");
     data.command = 2;
+    var encrypted=crypto.publicEncrypt(publicKey,Buffer.from(data.pass));
+    data.pass=encrypted.toString("base64");
 
     socket.write(JSON.stringify(data));
 }
@@ -81,6 +94,10 @@ async function requestToClients() {
 }
 async function acceptRequests() {
     data.command = -1;
+    socket.write(JSON.stringify(data));
+}
+async function grpFunc() {
+    data.command = "group session";
     socket.write(JSON.stringify(data));
 }
 
@@ -177,7 +194,7 @@ async function task() {
         {
             type: 'list',
             name: 'opening options',
-
+            pageSize: 12,
             choices: tasks
         },
     ])
@@ -204,14 +221,34 @@ async function task() {
             } else if (answers["opening options"] == "Logout") {
                 data.command = "logout";
                 socket.write(JSON.stringify(data));
-            }else if(answers["opening options"]=="create group"){
-                data.clientid=prompt("Enter the group name: ");
-                data.command="create group";
+            } else if (answers["opening options"] == "create group") {
+                setTimeout(() => {
+                    term.clear();
+                    data.clientid = prompt("Enter name of group: ");
+
+                    data.command = -9;
+                    socket.write(JSON.stringify(data));
+                    //console.log(JSON.stringify(data));
+
+                })
+
+            } else if (answers["opening options"] == "view groups") {
+                data.command = -10;
                 socket.write(JSON.stringify(data));
-                
-            }else if(answers["opening options"]=="view groups"){
-                data.command="view groups";
+            } else if (answers["opening options"] == "start group session") {
+                grpFunc();
+            }else if(answers["opening options"]=="Delete group"){
+                data.command='deleteGroupList';
                 socket.write(JSON.stringify(data));
+            }else if(answers["opening options"]=="Exit"){
+                data.command="exitCommand";
+                socket.write(JSON.stringify(data));
+            }else if(answers["opening options"]=="Edit username and password"){
+                data.u=prompt("Enter new username: ");
+                data.p=prompt("Enter new password: ");
+                data.command="editInfo";
+                socket.write(JSON.stringify(data));
+
             }
         });
 
@@ -258,11 +295,19 @@ socket.on("connect", () => {
                     whenInvalidFuncRegister();
                 }, 2000);
             } else if (data.command == 2) {
+                if(data2.msg=="Already Logged in"){
+                    setTimeout(() => {
+                        term.clear();
+                        console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                        mainfunc();
+                    }, 2000);
+                }else{
                 setTimeout(() => {
                     term.clear();
                     console.log('\x1b[33m%s\x1b[0m', data2.msg);
                     whenInvalidFuncLogin();
                 }, 2000);
+            }
 
             } else if (data.command == -1) {
                 setTimeout(() => {
@@ -278,12 +323,18 @@ socket.on("connect", () => {
                     console.log('\x1b[33m%s\x1b[0m', data2.msg);
                     task();
                 })
-            }else if(data2.command=="view groups"){
+            } else if (data.command == -10) {
                 setTimeout(() => {
                     term.clear();
                     console.log('\x1b[33m%s\x1b[0m', data2.msg);
                     task();
-                }) 
+                })
+            }else if(data.command=="deleteGroup"){
+                setTimeout(()=>{
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    task();
+                })
             }
         } else if (data2.success) {
             if (data.command == 1) {
@@ -380,8 +431,8 @@ socket.on("connect", () => {
                     socket.write(JSON.stringify(data));
 
                 } else {
-                    console.log("sender chat: "+senderChat);
-                    console.log("Receiver chat: "+receiverChat);
+                    /* console.log("sender chat: "+senderChat);
+                    console.log("Receiver chat: "+receiverChat); */
                     console.log('\x1b[33m%s\x1b[0m', data2.msg);
                 }
             } else if (data.command == -4) {
@@ -423,25 +474,124 @@ socket.on("connect", () => {
                 })
             } else if (data.command == "neutral") {
                 task();
-                 senderChat=false;
-                receiverChat=false; 
+                senderChat = false;
+                receiverChat = false;
                 //quit=false;
-            }else if(data.command=="create group"){
-                /* setTimeout(() => {
+            } else if (data.command == -9) {
+                setTimeout(() => {
                     term.clear();
-                    
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
                     task();
-                }) */
-                console.log('\x1b[33m%s\x1b[0m', data2.msg);
-                task();
-            }else if(data.command=="view groups"){
-                /* setTimeout(() => {
+                })
+                //console.log("command is:")
+
+
+            } else if (data.command == -10) {
+                setTimeout(() => {
                     term.clear();
-                    
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
                     task();
-                }); */
+                });
+                //console.log("success command is: "+data.command);
+
+                
+            }else if(data.command=="group session"){
+                if (data2.msg2.length == 0) {
+                    console.log('\x1b[33m%s\x1b[0m', "Sorry, there are no active groups available");
+                    task();
+                } else {
+                    activeGroups = data2.msg2.split(", ");
+                    activeGroups.pop(activeGroups[activeGroups.length - 1])
+                    activeGroups.push("Go back");
+                    inquirer.prompt([
+                        {
+                            type:"list",
+                            name:"opening options",
+                            choices:activeGroups
+            
+                        }
+                    ]).then((answers)=>{
+                        if(answers["opening options"]=="Go back"){
+                            setTimeout(()=>{
+                                term.clear();
+                                task();
+                            })
+                        }else{
+                            data.clientid=answers["opening options"];
+                            data.command="group chatting";
+                            socket.write(JSON.stringify(data));
+                        }
+                    })
+                }
+            }else if(data.command=="group chatting"){
+                 grpChat=data2.success;
+                 setTimeout(()=>{
+                    term.clear();
+                    console.log(chalk.greenBright(data2.msg));
+                    
+                    readLine.close();
+                    process.stdin.resume();
+                 })      
+                 
+            }else if(data.command=="group chat"){   
+                
                 console.log('\x1b[33m%s\x1b[0m', data2.msg);
-                task();
+                //console.log(data.command);
+                
+            }else if(data.command=="groupQuit"){
+                setTimeout(()=>{
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    grpChat=false;
+                    task();
+                })
+            }else if(data.command=="deleteGroupList"){
+                if (data2.msg2.length == 0) {
+                    console.log('\x1b[33m%s\x1b[0m', "Sorry, there are no active groups available");
+                    task();
+                } else {
+                    var activeGroups2 = data2.msg2.split(", ");
+                    activeGroups2.pop(activeGroups2[activeGroups2.length - 1])
+                    activeGroups2.push("Go back");
+                    inquirer.prompt([
+                        {
+                            type:"list",
+                            name:"opening options",
+                            choices:activeGroups2
+            
+                        }
+                    ]).then((answers)=>{
+
+                        if(answers["opening options"]=="Go back"){
+                            setTimeout(()=>{
+                                term.clear();
+                                task();
+                            })
+                        }else{
+                            data.clientid=answers["opening options"];
+                            data.command="deleteGroup";
+                            socket.write(JSON.stringify(data));
+                        }
+                    })
+                }
+            }else if(data.command=="deleteGroup"){
+                setTimeout(()=>{
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    task();
+                })
+            }else if(data.command=="exitCommand"){
+                setTimeout(()=>{
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    process.exit();
+                })
+            }else if(data.command=="editInfo"){
+                setTimeout(()=>{
+                    term.clear();
+                    console.log('\x1b[33m%s\x1b[0m', data2.msg);
+                    task();
+                })
             }
         }
 
@@ -477,6 +627,17 @@ socket.on("connect", () => {
                 data.msg = message;
                 socket.write(JSON.stringify(data));
                 //console.log(data.command)
+            }
+        }else if(grpChat){
+            var message = d.toString().trim();
+            if(message!="quit"){
+                data.msg=message;
+                data.command="group chat";
+                socket.write(JSON.stringify(data));
+                console.log(data.command);
+            }else if(message=="quit"){
+                data.command="groupQuit";
+                socket.write(JSON.stringify(data));
             }
         }
     });
