@@ -55,44 +55,13 @@ const { exit } = require('process');
 const { stringify } = require('querystring');
 var publicKey = "MIIEowIBAAKCAQEAx9m/lkm5xZlBgqZwrxOGgU0+abcd6WF+LRnPs8vlalGZWXBgjxUNyIiNhcLe56Fi+5sT924k7zvN34dMe96HsUqgtkKIdqZXKYFpPWELBWXXScfYe4JaSJoxGSAwUN82XXLLOD/F6A9J5+AEOs1fbqfXYA/ZXXYd2Za/MxJLzxs3YTlKBlHDOkd+cBjXTGh87Rdm5v/HQx+0+L7pE47pwrqltP/tDDvS9jg5wELAWZgaHiImkR7zEEvaE14E9licnwR3wP8gNXU2CYVjuCheDAxOjcQLXzL/dZHjNIXk+g2Jw8YFSj/RUM2DhJ7w+aUmDwlgTh+2YGrKxJKz2GIOmwIDAQABAoIBADu2xlYjhUyTdE2TacwGK4RrDiEMQ/W92bOkKLlyTQQtiYJ933whMFMg6hhzl6LiR+8h8R9XW9XXqrYFeUbxwN2qjMaorpm1LgoKzuU2H9LnESLMgdS1qEBVQiJdydIAQABAEpSmCX5DQzPzbZAcWU14/ROI6MvSRS0Eq/CYoOoqkgWWr6X+THN1pAb+gtpcKUQI/p6xnZA2/ODkXmUlemRM8sRKX0nsrIF0WGTEYDEsvdHn8p/A5XdlxPOe6wKgCZa7nsewIuOE2mVXNJlhZYXGPp1nGx3poL0qpkWDR7VVJA10JwwY9y7MSa3AWtkxpXXd4rZZ8u4/teBbbVBAVhECgYEA9gnI4/Ainq8rtbi+EbkOowMN76IqTB4HYGzfNRIzdRcPomFrDfpPytzs2IRKRn7PFxgDNw+Op5dyAVhOW7mG36323WSkkWMdzemj1LbJBulsq1+zQBE37Fby/TnDXZnwER/RvNOSrfyHO9MuVtUmg6uyd3EePdQ1KJZDt33wq0UCgYEAz/E5KUmJV5xPy8sP3ToMLMvBh0ZLh2jpaMJYxUSvoJLJA+KxPutHLC3jAVCC/MadNBekWqHO+mNXqKfETHnU2MBaRVC7lHKYshBvCbP6nMYsOMtrLPl3NaYRPoJjLs8zSRJ/sH9Aj6g2KufFkf2ickjwq10dYOig/T+FotuwgF8CgYA2g7qATr/M+zErJZDvqlpE4jNfSkYm8WxfACCAyNSf+AkdyIoI4dJ2N3c/DijK7+QA0PA9bfQEzDiVdbR+/F+XBhuxuFACary62C7Vvd5S6ruKST0VT/tdIXLbisXv4mDf2nYFabeRV2e7aLJWyQmsmQmFD4pM1s0kfg7pBD2kJQKBgQCT0nr9M86T3oYHbPJ5JTPUgICyZrF4sIcFNuueSObFMrP9tCCmhuFQsconfBGyGotUpd3rpA2ciBSfy6vLZex+rbc+gVbn/9M2+mHFNxHYczSqp0kobqtlEwo9MrnJY/ikYKcvVDcUKNNhCuSzlOfvcJTObWJeKuGPRqH8lUpS5wKBgDTq1E5JQyX53TWxzGwV2HhbJPavds6MJ8C0OAbbOxCAs5PYXjkuJHjjFS4ZlInHNepOgSxkdb8khxZdp3tCMgeVCoa3kzjlvOCELYA4vcz/ChdDpUdEqwoor5igg+6nYnLOiq7du7MHdN9yEM1Xb6gubV5OAIPnO1u3kENZNI2N"
 
-
-// The `generateKeyPairSync` method accepts two arguments:
-// 1. The type ok keys we want, which in this case is "rsa"
-// 2. An object with the properties of the key
-//var publicKey="MIIEowIBAAKCAQEAx9m/lkm5xZlBgqZwrxOGgU0+abcd6WF+LRnPs8vlalGZWXBgjxUNyIiNhcLe56Fi+5sT924k7zvN34dMe96HsUqgtkKIdqZXKYFpPWELBWXXScfYe4JaSJoxGSAwUN82XXLLOD/F6A9J5+AEOs1fbqfXYA/ZXXYd2Za/MxJLzxs3YTlKBlHDOkd+cBjXTGh87Rdm5v/HQx+0+L7pE47pwrqltP/tDDvS9jg5wELAWZgaHiImkR7zEEvaE14E9licnwR3wP8gNXU2CYVjuCheDAxOjcQLXzL/dZHjNIXk+g2Jw8YFSj/RUM2DhJ7w+aUmDwlgTh+2YGrKxJKz2GIOmwIDAQABAoIBADu2xlYjhUyTdE2TacwGK4RrDiEMQ/W92bOkKLlyTQQtiYJ933whMFMg6hhzl6LiR+8h8R9XW9XXqrYFeUbxwN2qjMaorpm1LgoKzuU2H9LnESLMgdS1qEBVQiJdydIAQABAEpSmCX5DQzPzbZAcWU14/ROI6MvSRS0Eq/CYoOoqkgWWr6X+THN1pAb+gtpcKUQI/p6xnZA2/ODkXmUlemRM8sRKX0nsrIF0WGTEYDEsvdHn8p/A5XdlxPOe6wKgCZa7nsewIuOE2mVXNJlhZYXGPp1nGx3poL0qpkWDR7VVJA10JwwY9y7MSa3AWtkxpXXd4rZZ8u4/teBbbVBAVhECgYEA9gnI4/Ainq8rtbi+EbkOowMN76IqTB4HYGzfNRIzdRcPomFrDfpPytzs2IRKRn7PFxgDNw+Op5dyAVhOW7mG36323WSkkWMdzemj1LbJBulsq1+zQBE37Fby/TnDXZnwER/RvNOSrfyHO9MuVtUmg6uyd3EePdQ1KJZDt33wq0UCgYEAz/E5KUmJV5xPy8sP3ToMLMvBh0ZLh2jpaMJYxUSvoJLJA+KxPutHLC3jAVCC/MadNBekWqHO+mNXqKfETHnU2MBaRVC7lHKYshBvCbP6nMYsOMtrLPl3NaYRPoJjLs8zSRJ/sH9Aj6g2KufFkf2ickjwq10dYOig/T+FotuwgF8CgYA2g7qATr/M+zErJZDvqlpE4jNfSkYm8WxfACCAyNSf+AkdyIoI4dJ2N3c/DijK7+QA0PA9bfQEzDiVdbR+/F+XBhuxuFACary62C7Vvd5S6ruKST0VT/tdIXLbisXv4mDf2nYFabeRV2e7aLJWyQmsmQmFD4pM1s0kfg7pBD2kJQKBgQCT0nr9M86T3oYHbPJ5JTPUgICyZrF4sIcFNuueSObFMrP9tCCmhuFQsconfBGyGotUpd3rpA2ciBSfy6vLZex+rbc+gVbn/9M2+mHFNxHYczSqp0kobqtlEwo9MrnJY/ikYKcvVDcUKNNhCuSzlOfvcJTObWJeKuGPRqH8lUpS5wKBgDTq1E5JQyX53TWxzGwV2HhbJPavds6MJ8C0OAbbOxCAs5PYXjkuJHjjFS4ZlInHNepOgSxkdb8khxZdp3tCMgeVCoa3kzjlvOCELYA4vcz/ChdDpUdEqwoor5igg+6nYnLOiq7du7MHdN9yEM1Xb6gubV5OAIPnO1u3kENZNI2N"
-
-/*console.log(
-    publicKey.export({
-        type: "pkcs1",
-        format: "pem",
-    }),
-
-    privateKey.export({
-        type: "pkcs1",
-        format: "pem",
-    })
-)*/
-//console.log(sockets);
-
 const server = net.createServer();
 
 server.on("connection", socket => {
     clientid += 1
     socket.id = clientid;
-
-
-
-
-
-
     socket.on("data", (info) => {
-
-
-
         var data = JSON.parse(info);
-
-
-
         if (data.command == 1) {
             username = data.uname;
             password = data.pass;
@@ -110,8 +79,6 @@ server.on("connection", socket => {
                     //console.log("successfully connected");
                     //res.send("successfully connected");
                 }
-
-
                 var userModel = mongoose.model('users', userSchema);
                 const user = new userModel({
                     username: username,
@@ -143,64 +110,60 @@ server.on("connection", socket => {
         }
 
         else if (data.command == 2) {
-            //console.log("Before Decryption: "+data.pass);
-            mongoose.set("strictQuery", false);
-            mongoose.connect("mongodb://127.0.0.1:27017/assignment", {
-                useNewUrlParser: true,
-                useUnifiedTopology: true
-            }, (err) => {
-                if (err) {
-                    console.log("error: " + err);
-                } else {
-
-                }
-
-                var userModel = mongoose.model('users', userSchema);
-                var decrypt = crypto.privateDecrypt(privateKey, Buffer.from(data.pass.toString("base64"), "base64"));
-                data.pass = decrypt.toString();
-                //console.log("After Decryption: "+data.pass);
-                userModel.find({ username: data.uname, password: data.pass }, function (err, docs) {
+            var decrypt = crypto.privateDecrypt(privateKey, Buffer.from(data.pass.toString("base64"), "base64"));
+            data.pass = decrypt.toString();
+            if (Object.keys(sockets).indexOf(data.uname) != -1) {
+                data2.success = false;
+                data2.msg = `Already loggedin with username ${data.uname}`;
+                socket.write(JSON.stringify(data2));
+            } else {
+                //console.log("Before Decryption: "+data.pass);
+                mongoose.set("strictQuery", false);
+                mongoose.connect("mongodb://127.0.0.1:27017/assignment", {
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true
+                }, (err) => {
                     if (err) {
-                        console.log("Error: " + err);
+                        console.log("error: " + err);
                     } else {
-                        if (Object.keys(docs).length == 0) {
-                            data2.success = false;
-                            data2.msg = "Invalid login. Please try again";
-                        } else {
-                            if(Object.keys(sockets).indexOf(socket.username)!=-1){
-                                data.success=fail;
-                                data2.msg=`Already logged in`;
-                            }else{
-                            data2.success = true;
-                            socket.username = data.uname;
-                            socket.isInChat = false;
-                            socket.isInGroup = false;
-                            socket.requests = [];
-                            socket.sentRequest = [];
-                            socket.patner = "";
-                            socket.grpPatner = "";
-                            sockets[socket.username] = socket;
-                            
-                            data2.msg = "Logged in";
-                            console.log(`Number of active clients are: ${Object.keys(sockets).length}`);
-                            }
-                        }
-                        socket.write(JSON.stringify(data2));
+
                     }
+
+                    var userModel = mongoose.model('users', userSchema);
+
+
+                    //console.log("After Decryption: "+data.pass);
+                    userModel.find({ username: data.uname, password: data.pass }, function (err, docs) {
+                        if (err) {
+                            console.log("Error: " + err);
+                        } else {
+                            if (Object.keys(docs).length == 0) {
+                                data2.success = false;
+                                data2.msg = "Invalid login. Please try again";
+                            } else {
+
+                                data2.success = true;
+                                socket.username = data.uname;
+                                socket.isInChat = false;
+                                socket.isInGroup = false;
+                                socket.requests = [];
+                                socket.sentRequest = [];
+                                socket.patner = "";
+                                socket.grpPatner = "";
+                                sockets[socket.username] = socket;
+
+                                data2.msg = "Logged in";
+                                console.log(`Number of active clients are: ${Object.keys(sockets).length}`);
+
+                            }
+                            socket.write(JSON.stringify(data2));
+                        }
+                    })
                 })
-            })
-
-            //socket.write(`successfully logged in as ${socket.username}\n`);
-            // console.log("client connected with socket id: ", socket.id + " and with ip as: " + socket.remoteAddress + ":" + socket.remotePort);
-
-
+            }
         }
         else if (data.command == 3 || data.command == 0) {
             data2.hadQuit = false;
-
-
-
-
             var cli = "";
             Object.keys(sockets).forEach(i => {
                 if (i != socket.username && sockets[i].isInChat == false && sockets[i].isInGroup == false) {
@@ -317,8 +280,17 @@ server.on("connection", socket => {
             sockets[socket.patner].write(JSON.stringify(data2));
         } else if (data.command == -3) {
             data2.success = true;
+            var decrypt = crypto.privateDecrypt(privateKey, Buffer.from(data.msg.toString("base64"), "base64"));
+            data.msg = decrypt.toString();
+            //console.log(data.msg);
             data2.msg = `${socket.username}: ${data.msg}`
+            var encrypted = crypto.privateEncrypt(privateKey, Buffer.from(data2.msg));
+            data2.msg = encrypted.toString("base64");
             sockets[socket.patner].write(JSON.stringify(data2));
+        } else if (data.command == "resumeProcess") {
+            data2.success = true;
+            data2.msg = "";
+            socket.write(JSON.stringify(data2));
         }
         else if (data.command == -9) {
             //console.log("selected command is: "+data.command);
@@ -340,13 +312,18 @@ server.on("connection", socket => {
             data2.success = true;
             socket.grpPatner = data.clientid;
             data2.msg = "group chat is started";
+            socket.isInGroup = true;
             if (groups[socket.grpPatner].participants.indexOf(socket.username) == -1) {
                 groups[socket.grpPatner].participants.push(socket.username);
             }
             socket.write(JSON.stringify(data2));
         } else if (data.command == "groupQuit") {
+
             data2.msg = `${socket.username} has left the chat`;
+            var encrypted = crypto.privateEncrypt(privateKey, Buffer.from(data2.msg));
+            data2.msg = encrypted.toString("base64");
             data2.success = true;
+            socket.isInGroup = false;
             groups[socket.grpPatner].participants.forEach(person => {
                 if (person != socket.username) {
 
@@ -359,32 +336,40 @@ server.on("connection", socket => {
             console.log(`current participants in ${socket.grpPatner} are ${groups[socket.grpPatner].participants}`);
             socket.write(JSON.stringify(data2));
         }
-        else if (data.command == -10 || data.command == "group session" || data.command == "deletegroupList") {
+        else if (data.command == -10 || data.command == "group session" || data.command == 'deleteGroupList') {
+            //console.log(data.command);
+
+            if(Object.keys(groups).length==0){
+                data2.success=false;
+                data2.msg="Sorry, you have no active groups";
+                socket.write(JSON.stringify(data2));
+            }else{
+            console.log(data2.success);
             //console.log("command is: "+data.command)
             var grps = "";
             Object.keys(groups).forEach(grp => {
                 grps += grp + ", ";
             })
             data2.msg2 = grps;
-            if (grps.length > 0) {
-
-                data2.msg = "The active groups are: " + grps
-                data2.success = true;
-
-                socket.write(JSON.stringify(data2));
-            } else {
-                data2.success = false;
-                data2.msg = "Sorry, there are no active groups to join";
-                socket.write(JSON.stringify(data2));
-            }
+            console.log(`data2.msg2 is: ${grps}`);
+            data2.success=true;
+            data2.msg=`The active groups are ${grps}`;
+            socket.write(JSON.stringify(data2));
+        }
 
         } else if (data.command == "group chat") {
 
-            socket.isInGroup = true;
+            //socket.isInGroup = true;
             //groups[data.clientid].participants.push(socket.username);
+            var decrypt = crypto.privateDecrypt(privateKey, Buffer.from(data.msg.toString("base64"), "base64"));
+            data.msg = decrypt.toString();
             groups[socket.grpPatner].participants.forEach(person => {
                 if (person != socket.username) {
+
                     data2.msg = `${socket.username}: ${data.msg}`
+                    var encrypted = crypto.privateEncrypt(privateKey, Buffer.from(data2.msg));
+                    data2.msg = encrypted.toString("base64");
+
                     data2.success = true;
                     sockets[person].write(JSON.stringify(data2));
                 }
@@ -421,7 +406,7 @@ server.on("connection", socket => {
                 socket.write(JSON.stringify(data2));
             } else {
                 data2.success = false;
-                data2.msg = `Sorry, only admin  ${groups[data.clientid].admin} has permission to delete the group`;
+                data2.msg = `Sorry, only admin ${groups[data.clientid].admin} has permission to delete the group`;
                 socket.write(JSON.stringify(data2));
             }
         } else if (data.command == "editInfo") {
@@ -450,7 +435,7 @@ server.on("connection", socket => {
 
                 data2.success = true;
                 data2.msg = "username and password updated";
-                socket.username=data.u;
+                socket.username = data.u;
                 socket.write(JSON.stringify(data2));
             })
 
